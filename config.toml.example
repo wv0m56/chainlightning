@@ -1,0 +1,29 @@
+[listen]
+Scheme = "http"          # http/https
+Host = "127.0.0.1"
+Port = 11000
+
+[cert]
+Path = ""                # path to cert file for https, ignored for http
+
+[origin]
+Scheme = "http"
+Host = "127.0.0.1"
+Port = 12000
+Prefix = ""              # backend url = scheme://host:port/prefix/key
+
+[ttl]
+TickDelta = "1s"
+
+[cachefill]
+Timeout = "250ms"
+
+[stats]
+TickDelta = "10s"
+RelevanceWindow = "24h"
+
+[capacity]
+MB = 1000                # 1G
+
+[log]
+Level = "verbose"        # verbose/error/none
