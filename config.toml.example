@@ -36,5 +36,7 @@ RelevanceWindow = "24h"  # The time window (measured since last accessed) within
 MB = 1000                # 1G
 
 [log]
-Level = "verbose"        # verbose/error, output is always stdout for request
-                         # info and stderr for errors
+Level = "verbose"                # verbose/error, output is always stdout for request
+                                 # info and stderr for errors
+RemoteAddress = "RemoteAddr"     # "RemoteAddr" if not behind proxy,
+                                 # "X-Forwarded-For" if behind proxy

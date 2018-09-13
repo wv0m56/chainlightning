@@ -25,13 +25,21 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 		defer func() {
 			if c.Log.Level == "verbose" {
 				info := ""
+
 				if err == nil {
 					info += fmt.Sprintf("[%v] ", http.StatusOK)
 				} else {
-					info += fmt.Sprintf("[%v]", status)
+					info += fmt.Sprintf("[%v] ", status)
 				}
 
-				// add more info: client ip, requested key, maybe more
+				var addr string
+				if c.Log.RemoteAddress == "RemoteAddr" {
+					addr = r.RemoteAddr
+				} else if c.Log.RemoteAddress == "X-Forwarded-For" {
+					addr = r.Header.Get("X-Forwarded-For")
+				}
+
+				info += fmt.Sprintf("[%v] [%v]\n", addr, key)
 
 				logInfo(info)
 			}
@@ -51,10 +59,9 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 			if err == errNotFound {
 				status = http.StatusNotFound
 				return
-			} else {
-				status = http.StatusInternalServerError
-				return
 			}
+			status = http.StatusInternalServerError
+			return
 		}
 
 		_, err = io.Copy(w, data)

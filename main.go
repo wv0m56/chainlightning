@@ -117,5 +117,9 @@ func validateConfig(c *config) error {
 		return errors.New("log.Level must be verbose or error")
 	}
 
+	if addr := c.Log.RemoteAddress; addr != "RemoteAddr" || addr != "X-Forwarded-For" {
+		return errors.New(`log.RemoteAddress must be "RemoteAddr" or "X-Forwarded-For"`)
+	}
+
 	return nil
 }

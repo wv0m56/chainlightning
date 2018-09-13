@@ -55,7 +55,8 @@ type capacity struct {
 }
 
 type log struct {
-	Level string
+	Level         string
+	RemoteAddress string
 }
 
 type duration time.Duration
