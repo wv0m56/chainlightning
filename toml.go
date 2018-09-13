@@ -4,6 +4,7 @@ import "time"
 
 type config struct {
 	Listen    listen
+	Limit     limit
 	Cert      cert
 	Origin    origin
 	TTL       ttl
@@ -17,10 +18,16 @@ type listen struct {
 	Scheme string
 	Host   string
 	Port   int
+	Prefix string
+}
+
+type limit struct {
+	MaxKeyLength int
 }
 
 type cert struct {
-	Path string
+	KeyPath  string
+	CertPath string
 }
 
 type origin struct {

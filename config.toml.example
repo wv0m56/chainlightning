@@ -1,10 +1,18 @@
 [listen]
 Scheme = "http"          # http/https
-Host = "127.0.0.1"
+Host = "127.0.0.1"       # use * or 0.0.0.0 for "any"
 Port = 11000
+Prefix = ""              # /prefix/key requests will be passed into engine
+                         # as Get(key). If Prefix="", request router will
+                         # wire /key into Get(key).
+
+[limit]
+MaxKeyLength = 200       # maximum length of key with which a request will be
+                         # handled, otherwise ignored
 
 [cert]
-Path = ""                # path to cert file for https, ignored for http
+KeyPath = ""             # path to key file for https, ignored for http
+CertPath = ""            # path to cert
 
 [origin]
 Scheme = "http"
@@ -20,10 +28,13 @@ Timeout = "250ms"
 
 [stats]
 TickDelta = "10s"
-RelevanceWindow = "24h"
+RelevanceWindow = "24h"  # The time window (measured since last accessed) within
+                         # which an entry is considered relevant. Irrelevant
+                         # entries are first to be evicted when cache is full.
 
 [capacity]
 MB = 1000                # 1G
 
 [log]
-Level = "verbose"        # verbose/error/none
+Level = "verbose"        # verbose/error, output is always stdout for request
+                         # info and stderr for errors
