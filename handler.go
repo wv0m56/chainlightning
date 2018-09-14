@@ -16,6 +16,8 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 	}
 	if prefix != "" {
 		prefix = "/" + prefix + "/"
+	} else {
+		prefix = "/"
 	}
 
 	r.Get(prefix+"{key}", func(w http.ResponseWriter, r *http.Request) {

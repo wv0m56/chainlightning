@@ -41,8 +41,6 @@ type backend struct {
 func (b *backend) Fetch(key string, timeout time.Duration) (
 	io.ReadCloser, *time.Time, error) {
 
-	// TODO: timeout context, expiry
-
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 
 	req, err := http.NewRequest("GET", b.urlPrefix+key, nil)
@@ -59,6 +57,7 @@ func (b *backend) Fetch(key string, timeout time.Duration) (
 		return nil, nil, err
 	}
 
+	// TODO: expiry
 	return &response{resp, cancel}, nil, nil // TODO: expiry
 }
 

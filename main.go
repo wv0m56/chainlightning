@@ -95,7 +95,9 @@ func validateConfig(c *config) error {
 		host = c.Listen.Host
 	}
 	if _, err := url.ParseRequestURI(
-		host +
+		c.Listen.Scheme +
+			"://" +
+			host +
 			":" +
 			strconv.Itoa(c.Listen.Port) +
 			"/" +
@@ -109,11 +111,13 @@ func validateConfig(c *config) error {
 	}
 
 	if _, err := url.ParseRequestURI(
-		c.Origin.Host +
+		c.Origin.Scheme +
+			"://" +
+			c.Origin.Host +
 			":" +
-			strconv.Itoa(c.Listen.Port) +
+			strconv.Itoa(c.Origin.Port) +
 			"/" +
-			c.Listen.Prefix); err != nil {
+			c.Origin.Prefix); err != nil {
 
 		return errors.New("origin parameters do not form valid url")
 	}
