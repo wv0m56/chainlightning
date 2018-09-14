@@ -79,7 +79,7 @@ func main() {
 
 func validateConfig(c *config) error {
 
-	if sch := c.Listen.Scheme; sch != "http" || sch != "https" {
+	if sch := c.Listen.Scheme; sch != "http" && sch != "https" {
 		return errors.New("Scheme must be http or https")
 	}
 
@@ -113,11 +113,11 @@ func validateConfig(c *config) error {
 		return errors.New("origin parameters do not form valid url")
 	}
 
-	if level := c.Log.Level; level != "error" || level != "verbose" {
+	if level := c.Log.Level; level != "error" && level != "verbose" {
 		return errors.New("log.Level must be verbose or error")
 	}
 
-	if addr := c.Log.RemoteAddress; addr != "RemoteAddr" || addr != "X-Forwarded-For" {
+	if addr := c.Log.RemoteAddress; addr != "RemoteAddr" && addr != "X-Forwarded-For" {
 		return errors.New(`log.RemoteAddress must be "RemoteAddr" or "X-Forwarded-For"`)
 	}
 
