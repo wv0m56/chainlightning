@@ -20,8 +20,8 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 		prefix = "/"
 	}
 
-	r.Get(prefix+"{key}", func(w http.ResponseWriter, r *http.Request) {
-		key := chi.URLParam(r, "key")
+	r.Get(prefix+"*", func(w http.ResponseWriter, r *http.Request) {
+		key := chi.URLParam(r, "*")
 		var status int
 		var err error
 		defer func() {

@@ -85,7 +85,11 @@ func main() {
 func validateConfig(c *config) error {
 
 	if sch := c.Listen.Scheme; sch != "http" && sch != "https" {
-		return errors.New("Scheme must be http or https")
+		return errors.New("[listen]Scheme must be http or https")
+	}
+
+	if sch := c.Origin.Scheme; sch != "http" && sch != "https" {
+		return errors.New("[origin]Scheme must be http or https")
 	}
 
 	var host string
@@ -103,11 +107,11 @@ func validateConfig(c *config) error {
 			"/" +
 			c.Listen.Prefix); err != nil {
 
-		return errors.New("listen parameters do not form valid url")
+		return errors.New("[listen] parameters do not form valid url")
 	}
 
 	if c.Limit.MaxKeyLength < 8 {
-		return errors.New("MaxKeyLength must be 8 or more")
+		return errors.New("[limit]MaxKeyLength must be 8 or more")
 	}
 
 	if _, err := url.ParseRequestURI(
@@ -119,15 +123,15 @@ func validateConfig(c *config) error {
 			"/" +
 			c.Origin.Prefix); err != nil {
 
-		return errors.New("origin parameters do not form valid url")
+		return errors.New("[origin] parameters do not form valid url")
 	}
 
 	if level := c.Log.Level; level != "error" && level != "verbose" {
-		return errors.New("log.Level must be verbose or error")
+		return errors.New("[log]Level must be verbose or error")
 	}
 
 	if addr := c.Log.RemoteAddress; addr != "RemoteAddr" && addr != "X-Forwarded-For" {
-		return errors.New(`log.RemoteAddress must be "RemoteAddr" or "X-Forwarded-For"`)
+		return errors.New(`[log]RemoteAddress must be "RemoteAddr" or "X-Forwarded-For"`)
 	}
 
 	return nil
