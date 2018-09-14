@@ -44,11 +44,16 @@ func main() {
 	opts.ExpectedLen = 100 * 1000 * 1000
 	opts.MaxPayloadTotalBytes = conf.Capacity.MB * 1000 * 1000
 	opts.TTLTickStep = time.Duration(conf.TTL.TickDelta)
-	opts.O = createOrigin(&conf)
+	opts.O, err = createOrigin(&conf)
+	if err != nil {
+		logErr(err)
+		return
+	}
 
 	e, err := engine.NewEngine(&opts)
 	if err != nil {
-		panic(err)
+		logErr(err)
+		return
 	}
 
 	r := chi.NewRouter()

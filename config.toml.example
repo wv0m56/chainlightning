@@ -24,7 +24,7 @@ Prefix = ""              # backend url = scheme://host:port/prefix/key
 TickDelta = "1s"
 
 [cachefill]
-Timeout = "250ms"
+Timeout = "2s"
 
 [stats]
 TickDelta = "10s"

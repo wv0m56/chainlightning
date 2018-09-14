@@ -24,12 +24,8 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 		var err error
 		defer func() {
 			if c.Log.Level == "verbose" {
-				info := ""
-
 				if err == nil {
-					info += fmt.Sprintf("[%v] ", http.StatusOK)
-				} else {
-					info += fmt.Sprintf("[%v] ", status)
+					status = http.StatusOK
 				}
 
 				var addr string
@@ -39,9 +35,7 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 					addr = r.Header.Get("X-Forwarded-For")
 				}
 
-				info += fmt.Sprintf("[%v] [%v]\n", addr, key)
-
-				logInfo(info)
+				logInfo(fmt.Sprintf("[%v] [%v] [%v]\n", status, addr, key))
 			}
 			if err != nil {
 				logErr(err)
