@@ -5,6 +5,7 @@ import (
 	"flag"
 	"net/url"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/BurntSushi/toml"
@@ -15,10 +16,12 @@ import (
 
 var (
 	confPath string
+	l        *logger
 )
 
 func init() {
 	flag.StringVar(&confPath, "c", "config.toml", "path to toml config file")
+	l = &logger{sync.Mutex{}, sync.Mutex{}}
 }
 
 func main() {
@@ -27,13 +30,13 @@ func main() {
 	var conf config
 	_, err := toml.DecodeFile(confPath, &conf)
 	if err != nil {
-		logErr(err)
+		l.logSimpleErr(err)
 		return
 	}
 
 	err = validateConfig(&conf)
 	if err != nil {
-		logErr(err)
+		l.logSimpleErr(err)
 		return
 	}
 
@@ -46,13 +49,13 @@ func main() {
 	opts.TTLTickStep = time.Duration(conf.TTL.TickDelta)
 	opts.O, err = createOrigin(&conf)
 	if err != nil {
-		logErr(err)
+		l.logSimpleErr(err)
 		return
 	}
 
 	e, err := engine.NewEngine(&opts)
 	if err != nil {
-		logErr(err)
+		l.logSimpleErr(err)
 		return
 	}
 

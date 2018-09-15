@@ -24,24 +24,26 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 		key := chi.URLParam(r, "*")
 		var status int
 		var err error
+		var addr string
+		if c.Log.RemoteAddress == "RemoteAddr" {
+			addr = r.RemoteAddr
+		} else if c.Log.RemoteAddress == "X-Forwarded-For" {
+			addr = r.Header.Get("X-Forwarded-For")
+		}
 		defer func() {
-			if c.Log.Level == "verbose" {
-				if err == nil {
-					status = http.StatusOK
-				}
 
-				var addr string
-				if c.Log.RemoteAddress == "RemoteAddr" {
-					addr = r.RemoteAddr
-				} else if c.Log.RemoteAddress == "X-Forwarded-For" {
-					addr = r.Header.Get("X-Forwarded-For")
-				}
-
-				logInfo(fmt.Sprintf("[%v] [%v] [%v]\n", status, addr, key))
-			}
 			if err != nil {
-				logErr(err)
+
+				go l.logRequestErr(fmt.Sprintf("error: %v. Request info: [%v] [%v] [%v]\n",
+					err, status, addr, key))
 				w.WriteHeader(status)
+
+			} else {
+
+				if c.Log.Level == "verbose" {
+					status = http.StatusOK
+					go l.logInfo(fmt.Sprintf("[%v] [%v] [%v]\n", status, addr, key))
+				}
 			}
 		}()
 
