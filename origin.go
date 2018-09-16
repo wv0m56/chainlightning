@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/wv0m56/fury/engine"
@@ -74,9 +75,19 @@ func (b *backend) Fetch(key string, timeout time.Duration) (
 		}
 	}
 
-	// TODO: expiry
-	// use cache-control/max-age=n http header
-	return &response{resp, cancel}, nil, nil // TODO: expiry
+	var expiry time.Time
+	if maxAge := resp.Header.Get("Cache-Control"); maxAge != "" {
+		i, err := strconv.Atoi(strings.TrimPrefix(maxAge, "max-age="))
+		expiry = time.Now().Add(time.Duration(i) * time.Second)
+		if err != nil {
+			cancel()
+			return nil, nil, err500
+		}
+	}
+
+	// TODO: propagate max-age to client
+
+	return &response{resp, cancel}, &expiry, nil
 }
 
 type response struct {

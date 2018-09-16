@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
 	"github.com/go-chi/chi"
 	"github.com/wv0m56/fury/engine"
@@ -60,6 +61,10 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 			}
 			status = http.StatusInternalServerError
 			return
+		}
+
+		if ttl := e.GetTTL(key); ttl[0] > 0 {
+			w.Header().Set("Cache-Control", "max-age="+strconv.FormatFloat(ttl[0], 'f', 0, 64))
 		}
 
 		_, err = io.Copy(w, data)
