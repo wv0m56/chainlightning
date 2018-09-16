@@ -12,7 +12,11 @@ import (
 	"github.com/wv0m56/fury/engine"
 )
 
-var errNotFound = errors.New("404 from origin")
+var (
+	err404     = errors.New("404 from origin")
+	err500     = errors.New("500 from origin")
+	errUnknown = errors.New("unknown error")
+)
 
 func createOrigin(c *config) (engine.Origin, error) {
 	port := strconv.Itoa(c.Origin.Port)
@@ -57,7 +61,21 @@ func (b *backend) Fetch(key string, timeout time.Duration) (
 		return nil, nil, err
 	}
 
+	if status := resp.StatusCode; status != http.StatusOK {
+		cancel()
+		if status == http.StatusNotFound {
+			return nil, nil, err404
+		}
+
+		if status == http.StatusInternalServerError {
+			return nil, nil, err500
+		} else {
+			return nil, nil, errUnknown
+		}
+	}
+
 	// TODO: expiry
+	// use cache-control/max-age=n http header
 	return &response{resp, cancel}, nil, nil // TODO: expiry
 }
 

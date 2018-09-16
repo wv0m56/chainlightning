@@ -54,7 +54,7 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 
 		data, err := e.Get(key)
 		if err != nil {
-			if err == errNotFound {
+			if err == err404 {
 				status = http.StatusNotFound
 				return
 			}
