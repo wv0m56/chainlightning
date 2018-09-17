@@ -92,7 +92,16 @@ func (b *backend) Fetch(key string, timeout time.Duration) (
 }
 
 func getExpiry(resp *http.Response) (*time.Time, error) {
-	if cc := resp.Header.Get("Cache-Control"); cc != "" {
+	if ce := resp.Header.Get("Chainlightning-Expiry"); ce != "" {
+
+		exp, err := time.Parse(time.RFC3339, ce)
+		if err != nil {
+			return nil, err
+		}
+		return &exp, nil
+
+	} else if cc := resp.Header.Get("Cache-Control"); cc != "" {
+
 		i, err := strconv.Atoi(strings.TrimPrefix(cc, "max-age="))
 		if err != nil {
 			return nil, err
@@ -100,6 +109,7 @@ func getExpiry(resp *http.Response) (*time.Time, error) {
 		exp := time.Now().Add(time.Duration(i) * time.Second)
 		return &exp, nil
 	}
+
 	return nil, nil
 }
 
