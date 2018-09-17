@@ -47,10 +47,15 @@ func (b *backend) Fetch(key string, timeout time.Duration) (
 	io.ReadCloser, *time.Time, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	var err error
+	defer func() {
+		if err != nil {
+			cancel()
+		}
+	}()
 
 	req, err := http.NewRequest("GET", b.urlPrefix+key, nil)
 	if err != nil {
-		cancel()
 		return nil, nil, err
 	}
 
@@ -58,12 +63,15 @@ func (b *backend) Fetch(key string, timeout time.Duration) (
 	client := http.DefaultClient
 	resp, err := client.Do(req)
 	if err != nil {
-		cancel()
 		return nil, nil, err
 	}
+	defer func() {
+		if err != nil {
+			_ = resp.Body.Close()
+		}
+	}()
 
 	if status := resp.StatusCode; status != http.StatusOK {
-		cancel()
 		if status == http.StatusNotFound {
 			return nil, nil, err404
 		}
@@ -75,19 +83,24 @@ func (b *backend) Fetch(key string, timeout time.Duration) (
 		}
 	}
 
-	var expiry time.Time
-	if maxAge := resp.Header.Get("Cache-Control"); maxAge != "" {
-		i, err := strconv.Atoi(strings.TrimPrefix(maxAge, "max-age="))
-		expiry = time.Now().Add(time.Duration(i) * time.Second)
-		if err != nil {
-			cancel()
-			return nil, nil, err500
-		}
+	exp, err := getExpiry(resp)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	// TODO: propagate max-age to client
+	return &response{resp, cancel}, exp, nil
+}
 
-	return &response{resp, cancel}, &expiry, nil
+func getExpiry(resp *http.Response) (*time.Time, error) {
+	if cc := resp.Header.Get("Cache-Control"); cc != "" {
+		i, err := strconv.Atoi(strings.TrimPrefix(cc, "max-age="))
+		if err != nil {
+			return nil, err
+		}
+		exp := time.Now().Add(time.Duration(i) * time.Second)
+		return &exp, nil
+	}
+	return nil, nil
 }
 
 type response struct {
