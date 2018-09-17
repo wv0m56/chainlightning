@@ -129,8 +129,8 @@ func validateConfig(c *config) error {
 		return errors.New("[origin] parameters do not form valid url")
 	}
 
-	if level := c.Log.Level; level != "error" && level != "verbose" {
-		return errors.New("[log]Level must be verbose or error")
+	if level := c.Log.Level; level != "error" && level != "always" {
+		return errors.New("[log]Level must be always or error")
 	}
 
 	if addr := c.Log.RemoteAddress; addr != "RemoteAddr" && addr != "X-Forwarded-For" {

@@ -5,6 +5,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/wv0m56/fury/engine"
@@ -26,6 +27,7 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 		var status int
 		var err error
 		var addr string
+		start := time.Now()
 		if c.Log.RemoteAddress == "RemoteAddr" {
 			addr = r.RemoteAddr
 		} else if c.Log.RemoteAddress == "X-Forwarded-For" {
@@ -35,15 +37,15 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 
 			if err != nil {
 
-				go l.logRequestErr(fmt.Sprintf("error: %v. Request info: [%v] [%v] [%v]\n",
-					err, status, addr, key))
+				go l.logRequestErr(fmt.Sprintf("error: %v. Request info: [%v] [%v] [%v] in %v\n",
+					err, status, addr, key, time.Since(start)))
 				w.WriteHeader(status)
 
 			} else {
 
-				if c.Log.Level == "verbose" {
+				if c.Log.Level == "always" {
 					status = http.StatusOK
-					go l.logInfo(fmt.Sprintf("[%v] [%v] [%v]\n", status, addr, key))
+					go l.logInfo(fmt.Sprintf("[%v] [%v] [%v] in %v\n", status, addr, key, time.Since(start)))
 				}
 			}
 		}()
