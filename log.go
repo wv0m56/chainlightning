@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"sync"
+	"time"
 )
 
 type logger struct {
@@ -17,14 +18,21 @@ func (l *logger) logSimpleErr(err error) {
 	l.errMu.Unlock()
 }
 
-func (l *logger) logRequestErr(errStr string) {
+func (l *logger) logRequestErr(err error, status int, addr string, key string, dur time.Duration) {
 	l.errMu.Lock()
-	fmt.Fprintln(os.Stderr, errStr)
+	fmt.Fprintf(os.Stderr, "error: %v. request info: [%v] [%v] [%v] in %v\n",
+		err, status, addr, key, dur)
 	l.errMu.Unlock()
 }
 
-func (l *logger) logInfo(info string) {
+func (l *logger) logPanic(addr, key string, rec interface{}) {
+	l.errMu.Lock()
+	fmt.Fprintf(os.Stderr, "panicked. request info: [%v] [%v]\nstacktrace:\n%v", addr, key, rec)
+	l.errMu.Unlock()
+}
+
+func (l *logger) logInfo(status int, addr string, key string, dur time.Duration) {
 	l.outMu.Lock()
-	fmt.Fprintln(os.Stdout, info)
+	fmt.Fprintf(os.Stdout, "[%v] [%v] [%v] in %v\n", status, addr, key, dur)
 	l.outMu.Unlock()
 }

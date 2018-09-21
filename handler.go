@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"strconv"
@@ -35,17 +34,21 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 		}
 		defer func() {
 
+			if rec := recover(); rec != nil {
+				go l.logPanic(addr, key, rec)
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+
 			if err != nil {
 
-				go l.logRequestErr(fmt.Sprintf("error: %v. Request info: [%v] [%v] [%v] in %v\n",
-					err, status, addr, key, time.Since(start)))
+				go l.logRequestErr(err, status, addr, key, time.Since(start))
 				w.WriteHeader(status)
 
 			} else {
 
 				if c.Log.Level == "always" {
 					status = http.StatusOK
-					go l.logInfo(fmt.Sprintf("[%v] [%v] [%v] in %v\n", status, addr, key, time.Since(start)))
+					go l.logInfo(status, addr, key, time.Since(start))
 				}
 			}
 		}()
