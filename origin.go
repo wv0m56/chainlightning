@@ -103,6 +103,7 @@ func getExpiry(resp *http.Response) (*time.Time, error) {
 	} else if cc := resp.Header.Get("Cache-Control"); cc != "" {
 
 		for _, v := range strings.Split(cc, ",") {
+			v = strings.TrimSpace(v)
 			if strings.HasPrefix(v, "max-age=") {
 				i, err := strconv.Atoi(strings.TrimPrefix(v, "max-age="))
 				if err != nil {

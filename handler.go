@@ -10,6 +10,13 @@ import (
 	"github.com/wv0m56/fury/engine"
 )
 
+/*
+(1) /route/to/http/resource - ok
+(2) /route/to/http/resource/myimage.jpg - ok
+(3) /route/to/http/resource/myimage.jpg?param1=val1&param2=val2 - ok but query ignored
+
+(3) is handled in identical way as (2)
+*/
 func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 	var prefix string
 	if p := c.Listen.Prefix; p != "" {
