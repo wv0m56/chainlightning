@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTTL(t *testing.T) {
+func TestExpiry(t *testing.T) {
 	resp1 := &http.Response{
 		Header: http.Header(map[string][]string{}),
 	}

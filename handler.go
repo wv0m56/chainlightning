@@ -76,7 +76,12 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 		}
 
 		if ttl := e.GetTTL(key); ttl[0] > 0 {
-			w.Header().Set("Cache-Control", "max-age="+strconv.FormatFloat(ttl[0], 'f', 0, 64))
+			if c.TTL.SetCacheControl {
+				w.Header().Set("Cache-Control", "max-age="+strconv.FormatFloat(ttl[0], 'f', 0, 64))
+			}
+			if c.TTL.SetChainlightningExpiry {
+				w.Header().Set("Chainlightning-Expiry", strconv.FormatFloat(ttl[0], 'f', 3, 64))
+			}
 		}
 
 		_, err = io.Copy(w, data)

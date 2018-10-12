@@ -38,7 +38,9 @@ type origin struct {
 }
 
 type ttl struct {
-	TickDelta duration
+	TickDelta               duration
+	SetCacheControl         bool
+	SetChainlightningExpiry bool
 }
 
 type cachefill struct {
