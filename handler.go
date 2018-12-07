@@ -15,7 +15,7 @@ import (
 (2) /route/to/http/resource/myimage.jpg - ok
 (3) /route/to/http/resource/myimage.jpg?param1=val1&param2=val2 - ok but query ignored
 
-(3) is handled in identical way as (2)
+(3) is handled in an identical way as (2)
 */
 func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 	var prefix string
@@ -76,10 +76,10 @@ func routeHttp(e *engine.Engine, c *config, r chi.Router) {
 		}
 
 		if ttl := e.GetTTL(key); ttl[0] > 0 {
-			if c.TTL.SetCacheControl {
+			if c.TTL.SetCacheControlResponseHeader {
 				w.Header().Set("Cache-Control", "max-age="+strconv.FormatFloat(ttl[0], 'f', 0, 64))
 			}
-			if c.TTL.SetChainlightningExpiry {
+			if c.TTL.SetChainlightningExpiryResponseHeader {
 				w.Header().Set("Chainlightning-Expiry", strconv.FormatFloat(ttl[0], 'f', 3, 64))
 			}
 		}

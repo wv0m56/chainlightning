@@ -24,12 +24,14 @@ func main() {
 		secStr := strconv.FormatFloat(sec.Seconds(), 'f', 0, 64)
 		w.Header().Set("Cache-Control", "max-age="+secStr)
 
-		respBodyStr := "Time now is " + time.Now().String()
+		now := time.Now().String()
+		respBodyStr := "Time now is " + now
 		respBodyStr += "\nCheck header for expiry values"
 		_, err = w.Write([]byte(respBodyStr))
 		if err != nil {
 			panic(err)
 		}
+		fmt.Println("request served at:", now)
 	})
 
 	http.ListenAndServe(":12000", r)
