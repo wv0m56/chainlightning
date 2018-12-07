@@ -5,6 +5,7 @@
 *.so
 *.dylib
 chainlightning
+samplebackend/timestampserver/timestampserver
 
 # Test binary, build with `go test -c`
 *.test
