@@ -6,8 +6,10 @@ Chainlightning is a cache server which is:
 
 * chainable: you can put multiple layers of chainlighting servers in front of your origin server, where each one will act as an origin and is able to relay expiry values to the layer in front of it.
 * simplified: you don't write your own get and set logic.
+* route-keyed (for lack of a better term): request route serves as key.
+* request blocking: multiple requests to the same key during cachefill will be blocked and only served (simultaneously) after chainlightning has the whole value at hand.
 * origin controlled: control the lifetime of cached values from the origin server, and dozens or hundreds of chainlighting servers will invalidate your cached values when it is time, without you having to write further logic.
-* (todo) purgable: manually purge cached values if your business logic requires it.
+* (todo) purgeable: manually purge cached values if your business logic requires it.
 
 If everything works as intended, its mechanics should approximate the one described in this [video](https://www.facebook.com/Engineering/videos/live-video-solutions:-solving-the/10153675295382200/).
 
